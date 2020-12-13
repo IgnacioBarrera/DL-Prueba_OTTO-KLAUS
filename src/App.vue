@@ -1,32 +1,71 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <div>
+        <b-navbar toggleable="lg" type="dark" variant="info">
+          <b-navbar-brand>OTTO KLAUS</b-navbar-brand>
+
+          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+          <b-collapse id="nav-collapse" is-nav>
+            <b-navbar-nav>
+              <b-nav-item class="nav_item" v-if="this.uid"><router-link :to="{name: 'Lista'}">Inventario</router-link></b-nav-item>
+              <b-nav-item class="nav_item" v-else><router-link to="/">Login</router-link></b-nav-item>
+            </b-navbar-nav>
+
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+              <b-nav-form>
+                <b-button v-if="this.uid" variant="danger" class="mx-2" @click.prevent="salir">Cerrar Sesion</b-button>
+              </b-nav-form>
+            </b-navbar-nav>
+          </b-collapse>
+        </b-navbar>
+      </div>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
 
-#nav {
-  padding: 30px;
-}
+import firebase from 'firebase';
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+export default {
+  name: 'App',
+  data() {
+    return {
+      uid: '',
+    }
+  },
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+        this.uid = user.uid;
+        console.log('Hay usuario activo.');
+        this.$router.push('/lista')
+      } else {
+        console.log('No hay usuarios registrados')
+      }
+    });
+  },
+  methods: {
+    salir(){
+      firebase.auth().signOut().then(() => {
+        console.log('signOut ocurrio correctamente');
+        this.$router.push("/");
+        }).catch((error) => {
+        console.log(error);
+      });
+    }
+  },
 }
+</script>
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+<style scoped>
+  a {
+    color: white;
+    font-weight: bold;
+  }
 </style>
