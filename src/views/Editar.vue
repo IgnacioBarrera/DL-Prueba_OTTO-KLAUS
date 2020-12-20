@@ -72,7 +72,8 @@ export default {
   },
   methods: {
     actualizar() {
-      this.$confirm(
+      if (this.juguete.stock >= 0) {
+        this.$confirm(
         "¿Estás seguro que deseas editar el juguete seleccionado?",
         "Cuidado",
         {
@@ -92,6 +93,12 @@ export default {
         .catch(() => {
           console.log("Se produjo un error al editar el juguete.");
         });
+      } else {
+        this.$notify.error({
+                title: 'Error',
+                message: `No se puede ingresar stock negativo, intente nuevamente.`
+            });
+      }
     },
   },
 };
